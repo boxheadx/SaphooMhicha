@@ -4,14 +4,17 @@ const pool = require('../database/db');
 const queries = require('../queries/authQueries');
 const userQeries = require('../queries/userQueries');
 const HttpError = require('../error/httpError');
+const {attachCookieToResponse} = require('../utils/jwt');
 
 const register = async (req, res)=>{
     try{
-        const {username, email, password} = req.body;
+        const {username, email, password, role} = req.body;
 
-        if(!username || !email || !password){
+        if(!username || !email || !password || !role){
             throw new HttpError("Please provide all the details!", 400);
         }
+
+        if(parseInt(role) < 0 || parseInt(role) > 1) throw new HttpError("Invalid role", 400);
 
         const salt = await bcrypt.genSalt();
         const hashedPassword = await bcrypt.hash(password, salt);
@@ -21,7 +24,7 @@ const register = async (req, res)=>{
             throw new HttpError("Email already exists!", 400);
         } 
 
-        const result = await pool.query(queries.addUser, [username, email, hashedPassword]);
+        const result = await pool.query(queries.addUser, [username, email, hashedPassword, parseInt(role)]);
         res.status(200).send('Registration Successful!');
        
 
@@ -38,12 +41,12 @@ const login = async (req, res)=>{
         if(!email || !password) throw new HttpError("Please provide email & password!", 400);
         if(!(await pool.query(userQeries.checkEmailExists, [email])).rows.length) throw new HttpError("Email doesn't exist!", 400);
         
-        const results = await pool.query(userQeries.checkEmailExists, [email]);
-        const user = results.rows[0];
-        const passwordMatched = await bcrypt.compare(password, user.password_hash);
-        if(!passwordMatched){
-            throw new HttpError("Invalid credentials!", 400);
-        }
+        const results = await pool.query(queries.checkPassword, [email]);
+        const password_hash  = results.rows[0].password_hash;
+        const passwordMatched = await bcrypt.compare(password, password_hash);
+        if(!passwordMatched) throw new HttpError("Invalid credentials!", 400);
+
+        attachCookieToResponse({res, email});
 
         res.status(200).send('Logged in successfully!');
 
