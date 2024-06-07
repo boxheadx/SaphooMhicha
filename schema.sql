@@ -3,6 +3,7 @@ CREATE TABLE Users (
     username VARCHAR(50) NOT NULL UNIQUE,
     email VARCHAR(100) NOT NULL UNIQUE,
     password_hash TEXT NOT NULL,
+    user_role INT CHECK(role >=0 AND role <=2) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     profile_picture_url TEXT,
@@ -24,62 +25,71 @@ CREATE TABLE Books (
 
 CREATE TABLE Authors (
     author_id SERIAL PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
+    user_id INT,
     bio TEXT,
     date_of_birth DATE,
-    date_of_death DATE,
-    profile_picture_url TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE Book_Authors (
-    book_id INT REFERENCES Books(book_id),
-    author_id INT REFERENCES Authors(author_id),
-    PRIMARY KEY (book_id, author_id)
+    book_author SERIAL PRIMARY KEY,
+    book_id INT,
+    author_id INT,
+    FOREIGN KEY(author_id) REFERENCES Authors(author_id),
+    FOREIGN KEY(book_id) REFERENCES Books(book_id)
 );
 
 CREATE TABLE Reviews (
     review_id SERIAL PRIMARY KEY,
-    user_id INT REFERENCES Users(user_id),
-    book_id INT REFERENCES Books(book_id),
+    user_id INT,
+    book_id INT,
     rating INT CHECK (rating >= 1 AND rating <= 5),
     title VARCHAR(255),
     body TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES Users(user_id),
+    FOREIGN KEY (book_id) REFERENCES Books(book_id)
 );
 
 CREATE TABLE Ratings (
     rating_id SERIAL PRIMARY KEY,
-    user_id INT REFERENCES Users(user_id),
-    book_id INT REFERENCES Books(book_id),
+    user_id INT,
+    book_id INT,
     rating INT CHECK (rating >= 1 AND rating <= 5),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES Users(user_id),
+    FOREIGN KEY (book_id) REFERENCES Books(book_id)
 );
 
 CREATE TABLE Shelves (
     shelf_id SERIAL PRIMARY KEY,
-    user_id INT REFERENCES Users(user_id),
+    user_id INT,
     name VARCHAR(100) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES Users(user_id)
 );
 
 CREATE TABLE Book_Shelves (
-    book_id INT REFERENCES Books(book_id),
-    shelf_id INT REFERENCES Shelves(shelf_id),
-    PRIMARY KEY (book_id, shelf_id)
+    book_id INT,
+    shelf_id INT,
+    PRIMARY KEY (book_id, shelf_id),
+    FOREIGN KEY (book_id) REFERENCES Books(book_id),
+    FOREIGN KEY (shelf_id) REFERENCES Shelves(shelf_id)
 );
 
 CREATE TABLE Friends (
-    user_id INT REFERENCES Users(user_id),
-    friend_id INT REFERENCES Users(user_id),
+    user_id INT,
+    friend_id INT,
     status VARCHAR(10) CHECK (status IN ('pending', 'accepted', 'blocked')),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (user_id, friend_id)
+    PRIMARY KEY (user_id, friend_id),
+    FOREIGN KEY (user_id) REFERENCES Users(user_id),
+    FOREIGN KEY (friend_id) REFERENCES Users(user_id)
 );
 
 CREATE TABLE Genres (
@@ -91,16 +101,20 @@ CREATE TABLE Genres (
 );
 
 CREATE TABLE Book_Genres (
-    book_id INT REFERENCES Books(book_id),
-    genre_id INT REFERENCES Genres(genre_id),
-    PRIMARY KEY (book_id, genre_id)
+    book_id INT,
+    genre_id INT,
+    PRIMARY KEY (book_id, genre_id),
+    FOREIGN KEY (book_id) REFERENCES Books(book_id),
+    FOREIGN KEY (genre_id) REFERENCES Genres(genre_id)
 );
 
 CREATE TABLE User_Book_Statuses (
-    user_id INT REFERENCES Users(user_id),
-    book_id INT REFERENCES Books(book_id),
+    user_id INT,
+    book_id INT,
     status VARCHAR(20) CHECK (status IN ('read', 'reading', 'want to read')),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (user_id, book_id)
+    PRIMARY KEY (user_id, book_id),
+    FOREIGN KEY (user_id) REFERENCES Users(user_id),
+    FOREIGN KEY (book_id) REFERENCES Books(book_id)
 );
