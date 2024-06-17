@@ -3,7 +3,7 @@ CREATE TABLE Users (
     username VARCHAR(50) NOT NULL UNIQUE,
     email VARCHAR(100) NOT NULL UNIQUE,
     password_hash TEXT NOT NULL,
-    user_role INT CHECK(role >=0 AND role <=2) NOT NULL,
+    user_role INT CHECK(role >=0 AND role <=2) NOT NULL, -- 0 = user, 1 = author, 2 = admin
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     profile_picture_url TEXT,

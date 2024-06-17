@@ -24,7 +24,11 @@ const register = async (req, res)=>{
             throw new HttpError("Email already exists!", 400);
         } 
 
-        const result = await pool.query(queries.addUser, [username, email, hashedPassword, parseInt(role)]);
+        await pool.query(queries.addUser, [username, email, hashedPassword, parseInt(role)]);
+        if(parseInt(role) == 1){
+            const getuid = await pool.query(userQeries.getUserFromEmail, [email]);
+            await pool.query(queries.addAuthor, [getuid.rows[0].user_id]);
+        }
         res.status(200).send('Registration Successful!');
        
 
