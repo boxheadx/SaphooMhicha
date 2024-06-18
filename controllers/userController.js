@@ -24,8 +24,14 @@ const getUser = async (req, res)=>{
 
 }
 
+const myinfo = async(req, res)=>{
+    console.log('my info entered...');
+    res.send(req.user).status(200);
+}
+
 
 module.exports = {
     getUsers,
-    getUser
+    getUser,
+    myinfo
 }

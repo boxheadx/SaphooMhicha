@@ -49,8 +49,10 @@ const login = async (req, res)=>{
         const password_hash  = results.rows[0].password_hash;
         const passwordMatched = await bcrypt.compare(password, password_hash);
         if(!passwordMatched) throw new HttpError("Invalid credentials!", 400);
-
-        attachCookieToResponse({res, email});
+        
+        const getuser = await pool.query(userQeries.getUserFromEmail, [email]);
+        const user = getuser.rows[0].user_id;
+        attachCookieToResponse({res, user});
 
         res.status(200).send('Logged in successfully!');
 
