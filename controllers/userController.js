@@ -12,7 +12,7 @@ const getUsers = (req, res) => {
 const getUser = async (req, res)=>{
     
     try{
-        const id = parseInt(req.params.id);
+        const id = req.user.user;
         const result = await pool.query(queries.getUser, [id]); 
         if(!result.rows.length){
             throw new HttpError("User not found!", 200);
@@ -32,20 +32,10 @@ const editUser = async(req, res)=>{
         if(username){
             try{
                 await pool.query(queries.updateUsername, [username, userid]);
-                res.send('Username changed successfully!').status(200);
             } catch(err){
                 res.send(err).status(500);
             }
         }
-
-        if(username){
-            try{
-                await pool.query(queries.updateUsername, [username, userid]);
-            } catch(err){
-                res.send(err).status(500);
-            }
-        }
-
         if(email){
             try{
                 await pool.query(queries.updateEmail, [email, userid]);

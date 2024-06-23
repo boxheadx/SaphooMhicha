@@ -1,5 +1,5 @@
 const getUsers = 'SELECT user_id, username FROM Users';
-const getUser = 'SELECT user_id, username FROM Users where user_id=$1';
+const getUser = 'SELECT username, email, profile_picture_url FROM Users where user_id=$1';
 const checkEmailExists = 'SELECT * FROM Users where email=$1';
 const getUserFromEmail = 'SELECT user_id FROM Users where email=$1';
 const updateUsername = 'UPDATE Users SET username=$1 WHERE user_id=$2';
