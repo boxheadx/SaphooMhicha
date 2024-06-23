@@ -24,14 +24,46 @@ const getUser = async (req, res)=>{
 
 }
 
-const myinfo = async(req, res)=>{
-    console.log('my info entered...');
-    res.send(req.user).status(200);
+const editUser = async(req, res)=>{
+    try{
+        const userid = req.user.user;
+        const {username, profile_pic_url, email, current_password, new_password} = req.body;
+        
+        if(username){
+            try{
+                await pool.query(queries.updateUsername, [username, userid]);
+                res.send('Username changed successfully!').status(200);
+            } catch(err){
+                res.send(err).status(500);
+            }
+        }
+
+        if(username){
+            try{
+                await pool.query(queries.updateUsername, [username, userid]);
+            } catch(err){
+                res.send(err).status(500);
+            }
+        }
+
+        if(email){
+            try{
+                await pool.query(queries.updateEmail, [email, userid]);
+            } catch(err){
+                res.send(err).status(500);
+            }
+        }
+
+        res.status(201).send('Info edited successfully');
+
+    } catch(httpError){
+        res.status(httpError.status).send(httpError.msg);
+    }
 }
 
 
 module.exports = {
     getUsers,
     getUser,
-    myinfo
+    editUser
 }
