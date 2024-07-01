@@ -1,5 +1,5 @@
 const getRole = 'SELECT user_role FROM Users WHERE user_id=$1';
-const addBook = 'INSERT INTO Books(title, isbn, publication_date, publisher, language, description) VALUES($1, $2, $3, $4, $5, $6)';
+const addBook = 'INSERT INTO Books(title, isbn, publication_date, publisher, language, description, cover_image_url) VALUES($1, $2, $3, $4, $5, $6, $7)';
 const getAuthor = 'SELECT author_id FROM Authors WHERE user_id=$1';
 const getBookId = 'SELECT book_id FROM Books WHERE isbn=$1';
 const linkBook = 'INSERT INTO Book_Authors(book_id, author_id) VALUES($1, $2)';

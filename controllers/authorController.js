@@ -1,6 +1,7 @@
 const HttpError = require('../error/httpError');
 const pool = require('../database/db');
 const queries = require('../queries/authorQueries');
+const uploadImage = require('../utils/cloudinary');
 
 const isAuthor = async (user_id)=>{
     try{
@@ -27,15 +28,32 @@ const postBook = async(req, res) =>{
 
         const { title, publisher, isbn, publication_date, language, description } = req.body;
 
+        var book_cover;
+
+        if(req.files){
+            try{
+                book_cover = req.files.book_cover;
+            } catch(err){
+                console.log(err);
+                throw new HttpError('File error', 400);
+            }
+        }
+        else{
+            throw new HttpError('Please provide a book cover!', 400);
+        }
+
         if(!title || !publisher || !isbn || !publication_date || !language || !description) throw new HttpError('Please provide all the details!', 400);
 
         try{
-            await pool.query(queries.addBook, [title, isbn, publication_date, publisher, language, description]);
+            const cover_img = await uploadImage(book_cover, 'saphoomhicha/book_covers');
+            await pool.query(queries.addBook, [title, isbn, publication_date, publisher, language, description, cover_img.secure_url]);
             const author = await pool.query(queries.getAuthor, [user_id]);
             const book = await pool.query(queries.getBookId, [isbn]);
             const author_id = author.rows[0].author_id;
             const book_id = book.rows[0].book_id;
+            
             await pool.query(queries.linkBook, [book_id, author_id]);
+
         } catch(err){
             console.log(err);
             res.send('Error adding book!').status(500);
