@@ -1,5 +1,6 @@
 const cloudinary = require('cloudinary').v2;
 const fs = require('fs');
+const HttpError = require('../error/httpError');
 
 cloudinary.config({
     cloud_name: process.env.CLOUDINARY_NAME,
