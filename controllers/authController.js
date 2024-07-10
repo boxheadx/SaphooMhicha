@@ -1,9 +1,9 @@
 const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
 const pool = require('../database/db');
 const queries = require('../queries/authQueries');
 const userQeries = require('../queries/userQueries');
 const HttpError = require('../error/httpError');
+const { handle } = require('../error/errorHandler');
 const {attachCookieToResponse} = require('../utils/jwt');
 
 const register = async (req, res)=>{
@@ -19,11 +19,6 @@ const register = async (req, res)=>{
         const salt = await bcrypt.genSalt();
         const hashedPassword = await bcrypt.hash(password, salt);
 
-        const check = await pool.query(userQeries.checkEmailExists, [email]);
-        if(check.rows.length){
-            throw new HttpError("Email already exists!", 400);
-        } 
-
         await pool.query(queries.addUser, [username, email, hashedPassword, parseInt(role)]);
         if(parseInt(role) == 1){
             const getuid = await pool.query(userQeries.getUserFromEmail, [email]);
@@ -32,8 +27,8 @@ const register = async (req, res)=>{
         res.status(200).send('Registration Successful!');
        
 
-    } catch(httpError){
-        res.status(httpError.status).send(httpError.msg);
+    } catch(err){
+        handle(res, err);
     }
 
 }
@@ -53,11 +48,10 @@ const login = async (req, res)=>{
         const getuser = await pool.query(userQeries.getUserFromEmail, [email]);
         const user = getuser.rows[0].user_id;
         attachCookieToResponse({res, user});
-
         res.status(200).send('Logged in successfully!');
 
-    } catch(httpError){
-        res.status(httpError.status).send(httpError.msg);
+    } catch(err){
+        handle(res, err);
     }
 }
 

@@ -1,6 +1,7 @@
 const pool = require('../database/db');
 const queries = require('../queries/userQueries');
 const HttpError = require('../error/httpError');
+const { handle } = require('../error/errorHandler');
 const uploadImage = require('../utils/cloudinary');
 
 
@@ -17,11 +18,11 @@ const getUser = async (req, res)=>{
         const id = req.user.user;
         const result = await pool.query(queries.getUser, [id]); 
         if(!result.rows.length){
-            throw new HttpError("User not found!", 200);
+            throw new HttpError("User not found!", 404);
         }
         res.status(200).send(result.rows);
-    } catch(httpError){
-        res.status(httpError.status).send(httpError.msg);
+    } catch(err){
+        handle(res, err);
     }
 
 }
@@ -38,39 +39,24 @@ const editUser = async(req, res)=>{
         const {username, email, current_password, new_password} = req.body;
         
         if(username){
-            try{
-                await pool.query(queries.updateUsername, [username, userid]);
-            } catch(err){
-                res.send(err).status(500);
-            }
+            await pool.query(queries.updateUsername, [username, userid]);
         }
-        if(email){
-            try{
-                await pool.query(queries.updateEmail, [email, userid]);
-            } catch(err){
-                res.send(err).status(500);
-            }
+        if(email){  
+            await pool.query(queries.updateEmail, [email, userid]);
         }
 
         var uploadedImg;
 
         if(profile_pic){
             uploadedImg = await uploadImage(profile_pic, 'saphoomhicha/profile_pics');
-            try{
-
-                await pool.query(queries.updateProfilePic, [uploadedImg.secure_url, userid]);
-
-            } catch(err){
-                console.log(err);
-                throw new HttpError('failed to upload', 500);
-            }
+            if(!uploadImage || !uploadImage.secure_url) throw new HttpError('Failed to upload image!', 500);
+            await pool.query(queries.updateProfilePic, [uploadedImg.secure_url, userid]);
         }
 
-        res.status(201).send('Info edited successfully');
+        res.status(200).send('Info edited successfully');
 
-    } catch(httpError){
-        console.log(httpError);
-        res.status(httpError.status).send(httpError.msg);
+    } catch(err){
+        handle(res, err);
     }
 }
 

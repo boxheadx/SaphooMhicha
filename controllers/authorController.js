@@ -2,6 +2,7 @@ const HttpError = require('../error/httpError');
 const pool = require('../database/db');
 const queries = require('../queries/authorQueries');
 const uploadImage = require('../utils/cloudinary');
+const { handle } = require('../error/errorHandler');
 
 const isAuthor = async (user_id)=>{
     try{
@@ -23,47 +24,38 @@ const postBook = async(req, res) =>{
         if(isUserAuthor == -1) throw new HttpError('Failed to verify user role', 500);
 
         if(!isUserAuthor){
-            res.status(400).send('Sorry, you are not an author!');
+           throw new HttpError('Sorry, you are not an author!', 400);
         }
 
-        const { title, publisher, isbn, publication_date, language, description } = req.body;
+        const { title, publisher, isbn, publication_date, language, description, genres } = req.body;
 
         var book_cover;
 
-        if(req.files){
-            try{
-                book_cover = req.files.book_cover;
-            } catch(err){
-                console.log(err);
-                throw new HttpError('File error', 400);
-            }
-        }
-        else{
+        if(!req.files || !req.files.book_cover){
             throw new HttpError('Please provide a book cover!', 400);
         }
+        book_cover = req.files.book_cover;
 
-        if(!title || !publisher || !isbn || !publication_date || !language || !description) throw new HttpError('Please provide all the details!', 400);
+        if(!title || !publisher || !isbn || !publication_date || !language || !description || !genres) throw new HttpError('Please provide all the details!', 400);
+  
+        const cover_img = await uploadImage(book_cover, 'saphoomhicha/book_covers');
+        if(!cover_img || !cover_img.secure_url) throw new HttpError('Failed to upload cover image', 500);
+        await pool.query(queries.addBook, [title, isbn, publication_date, publisher, language, description, cover_img.secure_url]);
+        const book = await pool.query(queries.getBookId, [isbn]);
+        if(!book.rows.length) throw new HttpError('Failed to add the book', 500);
+        const author = await pool.query(queries.getAuthor, [user_id]);
+        const author_id = author.rows[0].author_id;
+        const book_id = book.rows[0].book_id;
 
-        try{
-            const cover_img = await uploadImage(book_cover, 'saphoomhicha/book_covers');
-            await pool.query(queries.addBook, [title, isbn, publication_date, publisher, language, description, cover_img.secure_url]);
-            const author = await pool.query(queries.getAuthor, [user_id]);
-            const book = await pool.query(queries.getBookId, [isbn]);
-            const author_id = author.rows[0].author_id;
-            const book_id = book.rows[0].book_id;
+        console.log(genres);
             
-            await pool.query(queries.linkBook, [book_id, author_id]);
-
-        } catch(err){
-            console.log(err);
-            res.send('Error adding book!').status(500);
-        }
+        await pool.query(queries.linkBook, [book_id, author_id]);
 
         res.send('Book posted mr author!').status(200);
 
 
-    } catch(httpError){
-        res.status(httpError.status).send(httpError.msg);
+    } catch(err){
+        handle(res, err);
     }
 }
 
@@ -71,25 +63,18 @@ const getBooks = async(req, res)=>{
     try{
         const { author } = req.params;
         var author_id = null;
+      
+        const authorIdQuery = await pool.query(queries.getAuthorFromUsername, [author]);
+        if(!authorIdQuery.rows.length) throw new HttpError('Author not found!', 404);
+        author_id = authorIdQuery.rows[0].author_id;
+        
+        const books = await pool.query(queries.getBooks, [author_id]);
+        if(!books.rows.length) throw new HttpError('No books found!', 404); 
+        res.send(books.rows).status(200);
 
-        try{
-            const authorIdQuery = await pool.query(queries.getAuthorFromUsername, [author]);
-            author_id = authorIdQuery.rows[0].author_id;
-        } catch(err){
-            console.log(err);
-            throw new HttpError("Author not found!", 400);
-        }
 
-        try{
-            const books = await pool.query(queries.getBooks, [author_id]);
-            res.send(books.rows).status(200);
-        } catch(err){
-            console.log(err);
-            throw new HttpError("Failed to fetch books", 500);
-        }
-
-    } catch(httpError){
-        res.send(httpError.msg).status(httpError.status);
+    } catch(err){
+        handle(res, err);
     }
 }
 
