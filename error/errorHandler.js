@@ -10,7 +10,7 @@ const handle = (res, err)=>{
     if(err.status && err.msg) res.send(err.msg).status(err.status);
 
     // PSQL Error
-    else if(err.name == 'error' && err.severity=='ERROR' && err.code){
+    else if(err.severity=='ERROR' && err.code){
         switch(err.code){
             case '23505':   // UNIQUE
                 sendError(res, err.table, {
