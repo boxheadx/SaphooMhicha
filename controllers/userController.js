@@ -49,7 +49,7 @@ const editUser = async(req, res)=>{
 
         if(profile_pic){
             uploadedImg = await uploadImage(profile_pic, 'saphoomhicha/profile_pics');
-            if(!uploadImage || !uploadImage.secure_url) throw new HttpError('Failed to upload image!', 500);
+            if(!uploadedImg || !uploadedImg.secure_url) throw new HttpError('Failed to upload image!', 500);
             await pool.query(queries.updateProfilePic, [uploadedImg.secure_url, userid]);
         }
 
