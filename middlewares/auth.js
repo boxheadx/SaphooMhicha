@@ -1,5 +1,7 @@
 const jwt = require('jsonwebtoken');
 const HttpError = require('../error/httpError');
+const pool = require('../database/db');
+const queries = require('../queries/userQueries');
 
 const authenticateUser = async (req, res, next) => {
     try{
@@ -9,9 +11,13 @@ const authenticateUser = async (req, res, next) => {
         }
         const decoded = await jwt.verify(token, process.env.JWT_SECRET);
         req.user = decoded;
+        
+        const checkUser = await pool.query(queries.getUser, [req.user.user]);
+        if(!checkUser.rows.length) throw new HttpError("Unauthorized", 401);
+
         next();
     } catch(httpError){
-        res.send(httpError.msg);
+        res.send(httpError.msg).status(httpError.status);
     }
 
 }
