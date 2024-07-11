@@ -52,17 +52,6 @@ CREATE TABLE Reviews (
     FOREIGN KEY (book_id) REFERENCES Books(book_id)
 );
 
-CREATE TABLE Ratings (
-    rating_id SERIAL PRIMARY KEY,
-    user_id INT,
-    book_id INT,
-    rating INT CHECK (rating >= 1 AND rating <= 5),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES Users(user_id),
-    FOREIGN KEY (book_id) REFERENCES Books(book_id)
-);
-
 CREATE TABLE Shelves (
     shelf_id SERIAL PRIMARY KEY,
     user_id INT,
@@ -105,15 +94,4 @@ CREATE TABLE Book_Genres (
     PRIMARY KEY (book_id, genre_id),
     FOREIGN KEY (book_id) REFERENCES Books(book_id),
     FOREIGN KEY (genre_id) REFERENCES Genres(genre_id)
-);
-
-CREATE TABLE User_Book_Statuses (
-    user_id INT,
-    book_id INT,
-    status VARCHAR(20) CHECK (status IN ('read', 'reading', 'want to read')),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (user_id, book_id),
-    FOREIGN KEY (user_id) REFERENCES Users(user_id),
-    FOREIGN KEY (book_id) REFERENCES Books(book_id)
 );
