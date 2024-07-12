@@ -1,13 +1,19 @@
 const sendError = (res, table, messages) => {
-    if(messages[table]) res.send(messages[table]).status(400);
-    else res.send(messages['default']).status(400);
+    if(messages[table]) {
+        console.log(messages[table]);
+        res.status(400).send(messages[table]);
+    }
+    else 
+    {
+        res.status(400).send(messages['default']);
+    }
 }
 
 const handle = (res, err)=>{
     console.log(err)
 
     // HttpError
-    if(err.status && err.msg) res.send(err.msg).status(err.status);
+    if(err.status && err.msg) res.status(err.status).send(err.msg);
 
     // PSQL Error
     else if(err.severity=='ERROR' && err.code){
@@ -31,7 +37,7 @@ const handle = (res, err)=>{
 
         }
     }
-    else res.send('server error').status(500);
+    else res.status(500).send('server error');
 }
 
 module.exports = { handle }

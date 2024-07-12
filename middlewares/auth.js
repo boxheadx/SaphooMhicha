@@ -17,7 +17,7 @@ const authenticateUser = async (req, res, next) => {
 
         next();
     } catch(httpError){
-        res.send(httpError.msg).status(httpError.status);
+        res.status(httpError.status).send(httpError.msg);
     }
 
 }
