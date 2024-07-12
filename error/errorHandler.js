@@ -1,6 +1,5 @@
 const sendError = (res, table, messages) => {
     if(messages[table]) {
-        console.log(messages[table]);
         res.status(400).send(messages[table]);
     }
     else 
@@ -30,10 +29,24 @@ const handle = (res, err)=>{
                 });
                 break;
 
+            case "22P02":
+                sendError(res, err.table, {
+                    "default" : "Invalid input!"
+                });
+                break;
+            
+            case "23514":
+                sendError(res, err.table, {
+                    "reviews" : "Rating must be between in range (1,5)",
+                    "default" : "Invalid input!"
+                });
+                break;
+
             default:
                 sendError(res, err.table, {
                     "default" : "Database error!"
                 });
+                break;
 
         }
     }
