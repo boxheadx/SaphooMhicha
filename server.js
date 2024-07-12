@@ -13,7 +13,11 @@ const port = 3000;
 app.use(express.json());
 app.use(cookieParser(process.env.JWT_SECRET));
 app.use(fileUpload({ useTempFiles: true }))
-app.use(cors());
+app.use(cors({
+    origin : "http://localhost:3000",
+    credentials: true
+  })
+)
 
 app.use('/api/v1/user', userRoutes);
 app.use('/api/v1/auth', authRoutes);
