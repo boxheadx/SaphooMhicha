@@ -55,11 +55,22 @@ const bookSearch = async(req, res)=>{
     }
 }
 
+const getAllReviews = async(req, res) => {
+    try{
+        const book_id = req.params.id;
+        const reviews = await pool.query(queries.getReviews, [book_id]);
+        res.status(200).send(reviews.rows);
+    } catch(err){
+        handle(res, err);
+    }
+}
+
 module.exports = {
     latestBooks, 
     latestBooksGenre, 
     getTopBooks, 
     getBook, 
     postReview,
-    bookSearch
+    bookSearch,
+    getAllReviews
 }

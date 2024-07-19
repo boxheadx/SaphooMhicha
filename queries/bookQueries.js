@@ -4,7 +4,7 @@ const getBookDetails = 'SELECT Books.title, Books.description, Books.language, u
 const addGenre = 'INSERT INTO Genres(name) VALUES($1)';
 const getGenreIds = 'SELECT genre_id FROM Genres WHERE name=ANY($1)';
 const linkBookGenre = 'INSERT INTO Book_Genres(book_id, genre_id) VALUES($1, $2)';
-const getReviews = 'SELECT user_id, title, body, rating FROM Reviews WHERE book_id=$1';
+const getReviews = 'SELECT Users.username, Users.profile_picture_url, title, body, rating FROM Reviews JOIN Users ON Users.user_id = Reviews.user_id WHERE book_id=$1';
 const addReview = 'INSERT INTO Reviews(user_id, book_id, title, body, rating) VALUES($1, $2, $3, $4, $5)';
 const checkReviewExists = 'SELECT * FROM Reviews WHERE user_id=$1 AND book_id=$2';
 const searchBook = "SELECT Books.title, Books.description, Books.language, username, cover_image_url FROM Books JOIN Book_Authors ON Book_Authors.book_id=Books.book_id JOIN Authors ON Authors.author_id=Book_Authors.author_id JOIN Users ON Users.user_id = Authors.user_id WHERE Books.title ILIKE '%' || $1 || '%' GROUP BY Books.book_id, Users.username";
