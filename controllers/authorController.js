@@ -69,12 +69,10 @@ const postBook = async(req, res) =>{
 
 const getBooks = async(req, res)=>{
     try{
-        const { author } = req.params;
-        var author_id = null;
+        const { author_id } = req.params;
       
-        const authorIdQuery = await pool.query(queries.getAuthorFromUsername, [author]);
+        const authorIdQuery = await pool.query(queries.getAuthorFromId, [author_id]);
         if(!authorIdQuery.rows.length) throw new HttpError('Author not found!', 404);
-        author_id = authorIdQuery.rows[0].author_id;
         
         const books = await pool.query(queries.getBooks, [author_id]);
         if(!books.rows.length) throw new HttpError('No books found!', 404); 

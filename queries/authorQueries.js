@@ -14,6 +14,7 @@ const editBookISBN = 'UPDATE Books SET isbn=$1 WHERE book_id=$2';
 const editBookCoverImageUrl = 'UPDATE Books SET cover_image_url=$1 WHERE book_id=$2';
 const checkBookAuthor = 'SELECT Authors.user_id FROM Authors JOIN Book_Authors ON Book_Authors.author_id=Authors.author_id WHERE Book_Authors.book_id=$1';
 const unlinkGenres = 'DELETE FROM Book_Genres WHERE book_id=$1';
+const getAuthorFromId = 'SELECT * FROM Authors WHERE author_id=$1';
 
 module.exports = {
     getRole,
@@ -31,5 +32,6 @@ module.exports = {
     editBookISBN,
     editBookCoverImageUrl,
     checkBookAuthor,
-    unlinkGenres
+    unlinkGenres,
+    getAuthorFromId
 }
