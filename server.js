@@ -14,7 +14,7 @@ app.use(express.json());
 app.use(cookieParser(process.env.JWT_SECRET));
 app.use(fileUpload({ useTempFiles: true }))
 app.use(cors({
-    origin : "http://localhost:3000",
+    origin : ["http://localhost:3000", "https://saphoomhicha.netlify.app"],
     credentials: true
   })
 )
