@@ -30,7 +30,7 @@ const postBook = async(req, res) =>{
         }
         book_cover = req.files.book_cover;
 
-        if(!title || !publisher || !isbn || !publication_date || !language || !description || !genres) throw new HttpError('Please provide all the details!', 400);
+        if(!title || !isbn || !publication_date || !language || !description || !genres) throw new HttpError('Please provide all the details!', 400);
   
         if(!Array.isArray(genres)) throw new HttpError('Select atleast 3 genres', 400);
         if(genres.length > 5) throw new HttpError('Too many genres', 400);
