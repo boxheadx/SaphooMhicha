@@ -41,6 +41,13 @@ const handle = (res, err)=>{
                     "default" : "Invalid input!"
                 });
                 break;
+            
+            case "23503":
+                sendError(res, err.table, {
+                    "book_shelves" : "Book doesn't exist!",
+                    "default" : "Doesn't exist!"
+                });
+                break;
 
             default:
                 sendError(res, err.table, {
