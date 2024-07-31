@@ -4,6 +4,7 @@ const userRoutes = require('./routes/userRoutes');
 const authRoutes = require('./routes/authRoutes');
 const authorRoutes = require('./routes/authorRoutes');
 const bookRoutes = require('./routes/bookRoutes');
+const shelvesRoutes = require('./routes/shelvesRoutes');
 const fileUpload = require('express-fileupload');
 const cors = require('cors')
 
@@ -23,6 +24,7 @@ app.use('/api/v1/user', userRoutes);
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/author', authorRoutes);
 app.use('/api/v1/book', bookRoutes);
+app.use('/api/v1/shelves', shelvesRoutes);
 
 app.listen(port, ()=>{
     console.log(`listening on port ${port}`);
