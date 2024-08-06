@@ -24,7 +24,9 @@ const register = async (req, res)=>{
             const getuid = await pool.query(userQeries.getUserFromEmail, [email]);
             await pool.query(queries.addAuthor, [getuid.rows[0].user_id]);
         }
-        res.status(200).send('Registration Successful!');
+        const getuid = await pool.query(userQeries.getUserFromEmail, [email]);
+        await pool.query("INSERT INTO Shelves (user_id, name) VALUES ($1, 'Want to Read'), ($1, 'Reading'), ($1, 'Finished Reading')", [getuid.rows[0].user_id]);
+	res.status(200).send('Registration Successful!');
        
 
     } catch(err){

@@ -17,6 +17,16 @@ const getShelves = async(req, res)=>{
     }
 }
 
+const getStatusShelves = async(req, res)=>{
+	try{
+		const user_id = req.user.user;
+		const shelves = await pool.query(queries.getStatusShelves, [user_id]);
+		res.status(200).send(shelves.rows);
+	} catch(err){
+		handle(res, err);
+	}
+}
+
 const getShelfBooks = async(req, res)=>{
     try{
         const user_id = req.user.user;
@@ -108,6 +118,7 @@ const removeBook = async(req, res)=>{
 
 module.exports = {
     getShelves,
+    getStatusShelves,
     getShelfBooks,
     createShelf,
     addABookToShelf,
