@@ -1,4 +1,4 @@
-const getAllShelves = 'SELECT shelf_id, name FROM Shelves WHERE user_id=$1';
+const getAllShelves = "SELECT shelf_id, name FROM Shelves WHERE user_id=$1 AND name NOT IN ('Want to Read', 'Reading', 'Finished Reading')";
 const getBooksFromShelf = 'SELECT book_id FROM Book_Shelves WHERE shelf_id=$1';
 const createShelf = 'INSERT INTO Shelves(user_id, name) VALUES($1, $2)';
 const addBookToShelf = 'INSERT INTO Book_Shelves(book_id, shelf_id) VALUES($1, $2)';
