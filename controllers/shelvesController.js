@@ -37,7 +37,7 @@ const getShelfBooks = async(req, res)=>{
             throw new HttpError('This shelf does not exist!', 400);
         }
         const books = await pool.query(queries.getBooksFromShelf, [shelf_id]);
-        if(!books.rows.length) throw new HttpError('The shelf is empty!', 200);
+        if(!books.rows.length) throw new HttpError('The shelf is empty!', 400);
 
         const book_ids = books.rows.map((book)=>{return book.book_id});
     
