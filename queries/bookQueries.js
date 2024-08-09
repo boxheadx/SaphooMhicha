@@ -9,7 +9,7 @@ const getReviews = 'SELECT Users.username, Users.profile_picture_url, title, bod
 const addReview = 'INSERT INTO Reviews(user_id, book_id, title, body, rating) VALUES($1, $2, $3, $4, $5)';
 const checkReviewExists = 'SELECT * FROM Reviews WHERE user_id=$1 AND book_id=$2';
 const searchBook = "SELECT Books.book_id, Books.title, Books.description, Books.language, username, cover_image_url FROM Books JOIN Book_Authors ON Book_Authors.book_id=Books.book_id JOIN Authors ON Authors.author_id=Book_Authors.author_id JOIN Users ON Users.user_id = Authors.user_id WHERE Books.title ILIKE '%' || $1 || '%' GROUP BY Books.book_id, Users.username";
-const getTopBooks = "SELECT b.book_id, b.title, b.isbn, b.publication_date, b.publisher, b.language, b.cover_image_url, b.description, AVG(r.rating) AS average_rating FROM Books b JOIN Reviews r ON b.book_id = r.book_id GROUP BY b.book_id ORDER BY average_rating DESC";
+const getTopBooks = "SELECT b.book_id, b.title, b.isbn, b.publication_date, b.publisher, b.language, b.cover_image_url, b.description, AVG(r.rating) AS average_rating, u.username FROM Books b JOIN Reviews r ON b.book_id = r.book_id JOIN Book_Authors ba ON b.book_id = ba.book_id JOIN Authors a ON ba.author_id = a.author_id JOIN Users u ON a.user_id = u.user_id GROUP BY b.book_id, u.username ORDER BY average_rating DESC";
 
 module.exports = {
     getLatestBooks,
