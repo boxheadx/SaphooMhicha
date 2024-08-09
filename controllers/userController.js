@@ -60,9 +60,23 @@ const editUser = async(req, res)=>{
     }
 }
 
+const getProfile = async(req, res)=>{
+    try{
+        const { user_id } = req.params;
+        const result = await pool.query(queries.getUser, [user_id]); 
+        if(!result.rows.length){
+            throw new HttpError("User not found!", 404);
+        }
+        res.status(200).send(result.rows);
+    } catch(err){
+        handle(res, err);
+    }
+}
+
 
 module.exports = {
     getUsers,
     getUser,
-    editUser
+    editUser,
+    getProfile
 }
