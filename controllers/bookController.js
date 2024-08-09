@@ -15,7 +15,12 @@ const latestBooksGenre = async(req, res) =>{
     
 }
 const getTopBooks = async(req, res) =>{
-    
+    try{
+        const top = await pool.query(queries.getTopBooks);
+        res.status(200).send(top.rows);
+    } catch(err){
+        handle(res, err);
+    }
 }
 const getBook = async(req, res) =>{
     try{
