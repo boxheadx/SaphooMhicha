@@ -15,6 +15,7 @@ const editBookCoverImageUrl = 'UPDATE Books SET cover_image_url=$1 WHERE book_id
 const checkBookAuthor = 'SELECT Authors.user_id FROM Authors JOIN Book_Authors ON Book_Authors.author_id=Authors.author_id WHERE Book_Authors.book_id=$1';
 const unlinkGenres = 'DELETE FROM Book_Genres WHERE book_id=$1';
 const getAuthorFromId = 'SELECT * FROM Authors WHERE author_id=$1';
+const topAuthors = "SELECT u.user_id, a.author_id, u.username AS author_name, AVG(r.rating) AS average_rating FROM Authors a JOIN Book_Authors ba ON a.author_id = ba.author_id JOIN Books b ON ba.book_id = b.book_id JOIN Reviews r ON b.book_id = r.book_id JOIN Users u ON a.user_id = u.user_id GROUP BY u.user_id, a.author_id, u.username HAVING COUNT(r.review_id) > 0 ORDER BY average_rating DESC";
 
 module.exports = {
     getRole,
@@ -33,5 +34,6 @@ module.exports = {
     editBookCoverImageUrl,
     checkBookAuthor,
     unlinkGenres,
-    getAuthorFromId
+    getAuthorFromId,
+    topAuthors
 }

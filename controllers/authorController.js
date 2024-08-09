@@ -11,6 +11,15 @@ const isAuthor = async (user_id)=>{
     return role == 1;
 }
 
+const topAuthors = async(req, res)=>{
+    try{
+        const top = await pool.query(queries.topAuthors);
+        res.status(200).send(top.rows);
+    } catch(err){
+        handle(res, err);
+    }
+}
+
 const postBook = async(req, res) =>{
     try{
 
@@ -144,5 +153,6 @@ const editBook = async(req, res)=>{
 module.exports = {
     postBook,
     getBooks,
-    editBook
+    editBook,
+    topAuthors
 }
