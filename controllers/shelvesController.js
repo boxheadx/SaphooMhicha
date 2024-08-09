@@ -64,7 +64,7 @@ const createShelf = async(req, res)=>{
         const { name } = req.body;
         if(!name) throw new HttpError('Provide a shelf name!', 400);
 
-        const check = await pool.query(queries.checkShelfExists, [name]);
+        const check = await pool.query(queries.checkShelfExists, [name, user_id]);
         if(check.rows.length) throw new HttpError('Shelf already exists!', 400);
 
         await pool.query(queries.createShelf, [user_id, name]);
