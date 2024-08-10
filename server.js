@@ -26,6 +26,10 @@ app.use('/api/v1/author', authorRoutes);
 app.use('/api/v1/book', bookRoutes);
 app.use('/api/v1/shelves', shelvesRoutes);
 
+app.get('/', (req, res)=>{
+  res.send('SaphooMhicha API');
+})
+
 app.listen(port, ()=>{
     console.log(`listening on port ${port}`);
 })
