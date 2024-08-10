@@ -58,7 +58,12 @@ const login = async (req, res)=>{
 }
 
 const logout = async(req, res) => {
-  res.clearCookie('token');
+  res.clearCookie('token',  {
+    httpOnly: true,
+    secure: true,
+    sameSite: "None",
+    signed: true
+});
   res.status(200).send('Logged out!');
 }
 
